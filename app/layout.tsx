@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/nav";
 import { Suspense } from "react";
-import ProductLoading from "./(i-tech)/shop/loading";
+import ProductLoading from "./(i-tech)/products/loading";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const getKantumruy = Kantumruy_Pro({

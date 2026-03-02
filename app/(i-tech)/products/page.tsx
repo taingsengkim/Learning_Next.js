@@ -15,6 +15,7 @@ async function getData() {
 
 export default async function ShopPage() {
   const products: ProductResponse[] = await getData();
+  console.log(products);
   return (
     <div className="pt-20 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4   ">
       {products.map((product: ProductResponse) => (
