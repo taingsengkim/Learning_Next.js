@@ -21,11 +21,15 @@ export default function ProductCard({
       <CardHeader className="relative block p-0 ">
         <AspectRatio ratio={1.268115942} className="overflow-hidden">
           <Image
-            src={images[0]}
+            src={
+              typeof images?.[0] === "string" && images[0].startsWith("http")
+                ? images[0]
+                : "https://geekflare.com/wp-content/uploads/2023/03/img-placeholder.png"
+            }
             alt={title}
             width={500}
-            height={500}
-            className="block size-full object-cover object-center"
+            height={400}
+            className="object-cover"
           />
           {/* <Image
             src={images[0]}

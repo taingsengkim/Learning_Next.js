@@ -20,7 +20,7 @@ import { file } from "zod";
 
 export const title = "Images Only";
 
-const ImagesUpload = ({ onImagesChange }: ImageUploadProps) => {
+const ImagesUpload = ({ value = [], onImagesChange }: ImageUploadProps) => {
   const [files, setFiles] = React.useState<File[]>([]);
 
   //   //Send files to parent
@@ -29,6 +29,10 @@ const ImagesUpload = ({ onImagesChange }: ImageUploadProps) => {
   //       onImagesChange(files);
   //     }
   //   }, [files, onImagesChange]);
+
+  React.useEffect(() => {
+    setFiles(value);
+  }, [value]);
 
   const onFileReject = React.useCallback((file: File, message: string) => {
     toast.error(message, {

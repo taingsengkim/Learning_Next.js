@@ -8,6 +8,7 @@
   }
 
   export interface ImageUploadProps {
+  value?: ImageFile[];   
   maxFiles?: number;
   maxSize?: number;
   accept?: string;
