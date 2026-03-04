@@ -37,6 +37,7 @@ import { ImageFile } from "@/lib/type/image-type";
 import { ImageProps } from "next/image";
 import { UploadImage } from "@/lib/data/images";
 import ProductCard from "../i-tech-cards/product-card1";
+import { toast } from "sonner";
 
 export default function UploadProduct({
   categories,
@@ -60,6 +61,7 @@ export default function UploadProduct({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
+      price: 0,
       description: "",
       categoryId: "",
       images: [],
@@ -90,10 +92,16 @@ export default function UploadProduct({
     // productRequest.images[0] = uploadProduct;
     const resData = await InsertProduct(productData);
     if (!resData || resData.id) {
-      form.reset();
-      alert("success");
+      form.reset({
+        title: "",
+        price: 0,
+        description: "",
+        categoryId: "",
+        images: [],
+      });
+      toast.success("Success to insert the product!");
     } else {
-      alert("error");
+      toast.error("Failed to instert the product!");
     }
   }
 
