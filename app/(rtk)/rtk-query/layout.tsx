@@ -7,14 +7,5 @@ export default function RTKLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = getCategories();
-
-  return (
-    <div>
-      {children}
-      <div className="container mx-auto">
-        <UploadProduct categories={categories} />
-      </div>
-    </div>
-  );
+  return <div>{children}</div>;
 }

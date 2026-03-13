@@ -16,8 +16,12 @@
                     body:newProduct
                 }),
                 invalidatesTags:['products']
-            })
+            }),
+             getProductById: builder.query<ProductResponse, string>({
+                query: (id) => `/api/v1/products/${id}`,
+                providesTags: (result, error, id) => [{ type: "products", id }],
+                }),
         })
     })
 
-    export const {useGetProductsQuery,useAddProductMutation} = productApi
+    export const {useGetProductsQuery,useAddProductMutation,useGetProductByIdQuery} = productApi
