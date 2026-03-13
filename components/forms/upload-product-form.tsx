@@ -23,9 +23,9 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { UploadIcon } from "lucide-react";
+import { ArrowDownAzIcon, UploadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { InsertProduct } from "@/lib/data/products";
+// import { InsertProduct } from "@/lib/data/products";
 import { title } from "process";
 import { privateDecrypt } from "crypto";
 import { Price } from "../i-tech-cards/price";
@@ -38,6 +38,7 @@ import { ImageProps } from "next/image";
 import { UploadImage } from "@/lib/data/images";
 import ProductCard from "../i-tech-cards/product-card1";
 import { toast } from "sonner";
+import { useAddProductMutation } from "@/lib/features/products/productApi";
 
 export default function UploadProduct({
   categories,
@@ -73,6 +74,8 @@ export default function UploadProduct({
   // function handleImageChange(images: ImageFile[]) {
   //   setImages(images);
   // }
+  const [createProduct, { isLoading }] = useAddProductMutation();
+
   const cateogires: CategoryType[] = use(categories);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -90,8 +93,10 @@ export default function UploadProduct({
     };
     // const productRequest: ProductRequest = values;
     // productRequest.images[0] = uploadProduct;
-    const resData = await InsertProduct(productData);
-    if (!resData || resData.id) {
+    // const resData = await InsertProduct(productData);
+
+    const resData = await createProduct(productData).unwrap();
+    if (resData) {
       form.reset({
         title: "",
         price: 0,

@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import ProductLoading from "./(i-tech)/products/loading";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import StoreProvider from "./StoreProvider";
 
 const getKantumruy = Kantumruy_Pro({
   variable: "--font-kantumruy",
@@ -44,7 +45,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {" "}
-          <div className=" bg-white dark:bg-gray-800 ">{children}</div>
+          <StoreProvider>
+            <div className=" bg-white dark:bg-gray-800 ">{children}</div>
+          </StoreProvider>
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
