@@ -4,7 +4,7 @@ import { ProductRequest } from "../type/product-response";
 const baseApi = process.env.NEXT_PUBLIC_API_URL;
 
 export default async function getProducts(){
-    const res = await fetch(`${baseApi}/api/v1/products`,{
+    const res = await fetch(`${baseApi}/products`,{
         method:"GET",
         headers:{
             "Content-Type":"applciation/json"
@@ -15,7 +15,7 @@ export default async function getProducts(){
 }
 
 export async function InsertProduct(product:ProductRequest){
-    const data = await fetch(`${baseApi}/api/v1/products`,{
+    const data = await fetch(`${baseApi}/products`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"

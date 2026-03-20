@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-  const products = getProducts();
   return (
     <>
       <Navbar />
@@ -19,7 +18,6 @@ export default function Home() {
             About Us
           </button>
         </Link>
-        {/* <ProductListClient fetchProducts={products} /> */}
       </div>
     </>
   );
