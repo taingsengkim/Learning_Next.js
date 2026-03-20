@@ -6,19 +6,19 @@
     export const productApi = fakeStore.injectEndpoints({
         endpoints:(builder)=>({
             getProducts: builder.query<ProductResponse[],void>({
-                query:()=>'/api/v1/products',
+                query:()=>'/products',
                 providesTags:['products']
             }),
             addProduct: builder.mutation({
                 query:(newProduct)=>({
-                    url:'/api/v1/products',
+                    url:'/products',
                     method:"POST",
                     body:newProduct
                 }),
                 invalidatesTags:['products']
             }),
              getProductById: builder.query<ProductResponse, string>({
-                query: (id) => `/api/v1/products/${id}`,
+                query: (id) => `/products/${id}`,
                 providesTags: (result, error, id) => [{ type: "products", id }],
                 }),
         })
