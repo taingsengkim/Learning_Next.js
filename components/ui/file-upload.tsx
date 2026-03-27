@@ -17,6 +17,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useAsRef } from "@/hooks/use-as-ref";
 import { useLazyRef } from "@/hooks/use-lazy-ref";
+import Image from "next/image";
 
 const ROOT_NAME = "FileUpload";
 const DROPZONE_NAME = "FileUploadDropzone";
@@ -179,8 +180,10 @@ function useFileUploadContext(consumerName: string) {
   return context;
 }
 
-interface FileUploadProps
-  extends Omit<React.ComponentProps<"div">, "defaultValue" | "onChange"> {
+interface FileUploadProps extends Omit<
+  React.ComponentProps<"div">,
+  "defaultValue" | "onChange"
+> {
   value?: File[];
   defaultValue?: File[];
   onValueChange?: (files: File[]) => void;
@@ -1067,25 +1070,44 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
   const context = useFileUploadContext(ITEM_PREVIEW_NAME);
 
   const getDefaultRender = React.useCallback(
-    (file: File) => {
-      if (itemContext.fileState?.file.type.startsWith("image/")) {
+    (file: File | string) => {
+      // Check if it's an existing image URL (string)
+      console.log("file", file);
+      if (typeof file === "string") {
+        return (
+          <Image
+            src={file}
+            alt="Existing file"
+            width={50}
+            height={50}
+            className="size-full object-cover"
+          />
+        );
+      }
+
+      // Check if it's a new upload (File object)
+      if (file instanceof File && file.type.startsWith("image/")) {
         let url = context.urlCache.get(file);
         if (!url) {
           url = URL.createObjectURL(file);
           context.urlCache.set(file, url);
         }
-
         return (
-          // biome-ignore lint/performance/noImgElement: dynamic file URLs from user uploads don't work well with Next.js Image optimization
-          <img src={url} alt={file.name} className="size-full object-cover" />
+          <Image
+            src={url}
+            alt="Existing file"
+            width={50}
+            height={50}
+            className="size-full object-cover"
+          />
+          // <img src={url} alt={file.name} className="size-full object-cover" />
         );
       }
 
-      return getFileIcon(file);
+      return file instanceof File ? getFileIcon(file) : <FileIcon />;
     },
-    [itemContext.fileState?.file.type, context.urlCache],
+    [context.urlCache],
   );
-
   const onPreviewRender = React.useCallback(
     (file: File) => {
       if (render) {

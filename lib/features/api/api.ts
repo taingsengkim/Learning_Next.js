@@ -3,8 +3,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const fakeStore = createApi({
     reducerPath: "productApi",
     baseQuery: fetchBaseQuery({
-        baseUrl : process.env.NEXT_PUBLIC_API_URL
+        baseUrl : "/api"
     }),
-    tagTypes:['products'],
+    tagTypes:['products','categories'],
     endpoints:()=>({})
 })

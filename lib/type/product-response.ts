@@ -1,10 +1,12 @@
+import { CategoryType } from "./category-response";
+
 export  type ProductResponse= {
     id:number;
     title:string;
     // slug:string;
     price:number;
     description:string;
-    // category:ProductResponseCategory;
+    category:ProductResponseCategory;
     images:string[];
 }
 
@@ -15,6 +17,8 @@ export  type ProductResponseCategory = {
 }
 
 export type ProductRequest ={   
+    id:number;
+
     title:string;
     price:number;
     description:string;
