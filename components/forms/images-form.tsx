@@ -11,6 +11,7 @@ import {
   FileUploadList,
 } from "../ui/file-upload";
 import { X } from "lucide-react";
+import Image from "next/image";
 
 interface ImagesUploadProps {
   value?: File[];
@@ -30,7 +31,8 @@ const ImagesUpload = ({
 
   React.useEffect(() => {
     setFiles(value);
-  }, [value]);
+    setOldImages(existingImages);
+  }, [value, existingImages]);
 
   const handleFilesChange = (newFiles: File[]) => {
     setFiles(newFiles);
@@ -53,13 +55,14 @@ const ImagesUpload = ({
   return (
     <div className="flex flex-col gap-2">
       {/* Existing images */}
-      {oldImages.length > 0 && (
+      {/* {oldImages.length > 0 && (
         <div className="flex gap-2 flex-wrap">
           {oldImages.map((url, index) => (
             <div key={index} className="relative">
-              <img
+              <Image
                 src={url}
-                className="w-20 h-20 object-cover rounded-md"
+                width={50}
+                height={50}
                 alt={`Existing ${index}`}
               />
               <Button
@@ -73,7 +76,7 @@ const ImagesUpload = ({
             </div>
           ))}
         </div>
-      )}
+      )} */}
 
       {/* New uploads */}
       <FileUpload
@@ -90,9 +93,28 @@ const ImagesUpload = ({
         </FileUploadDropzone>
 
         <FileUploadList>
+          {/* Render Existing Images (URLs) */}
+          {/* {oldImages.map((url, index) => (
+            <FileUploadItem key={`old-${index}`} value={url as any}>
+              <FileUploadItemPreview />
+              <div className="flex-1 truncate text-sm">
+                Existing Image {index + 1}
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeleteOld(index)}
+              >
+                <X className="size-4" />
+              </Button>
+            </FileUploadItem>
+          ))} */}
+
+          {/* Render New Uploads (Files) */}
           {files.map((file, index) => (
-            <FileUploadItem key={index} value={file}>
-              {file instanceof File && <FileUploadItemPreview />}
+            <FileUploadItem key={`new-${index}`} value={file}>
+              <FileUploadItemPreview />
+              <div className="flex-1 truncate text-sm">{file.name}</div>
               <FileUploadItemDelete asChild>
                 <Button
                   variant="ghost"

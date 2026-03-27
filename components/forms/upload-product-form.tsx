@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import {
   useAddProductMutation,
   useUpdateProductMutation,
+  useUploadImgMutation,
 } from "@/lib/features/products/productApi";
 import { useRouter } from "next/navigation";
 
@@ -105,21 +106,35 @@ export default function UploadProduct({
     }
   }, [isEdit, product, form]);
   // const cateogires: CategoryType[] = use(categories);
+  const [uploadImg, { isLoading: isUploading }] = useUploadImgMutation();
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     // console.log(images);
-    const imageFormData = new FormData();
-    imageFormData.append("file", values.images[0]);
-    const uploadProduct = await UploadImage(imageFormData);
-    console.log(uploadProduct);
+    // const imageFormData = new FormData();
+    // imageFormData.append("file", values.images[0]);
+    // const uploadProduct = await UploadImage(imageFormData);
+    // console.log(uploadProduct);
+
+    const newFiles = values.images.filter((img) => img instanceof File);
+    const existingUrls = values.images.filter((img) => typeof img === "string");
+
+    const uploadedUrls = await Promise.all(
+      newFiles.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await uploadImg(formData).unwrap();
+        return res.location;
+        e;
+      }),
+    );
+
+    const finalImageArray = [...existingUrls, ...uploadedUrls];
     const productData: ProductRequest = {
       title: values.title,
       price: values.price,
       description: values.description,
       categoryId: values.categoryId,
-      images: [
-        "https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg",
-      ],
+      images: finalImageArray,
     };
     // const productRequest: ProductRequest = values;
     // productRequest.images[0] = uploadProduct;

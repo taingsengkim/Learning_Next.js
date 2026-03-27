@@ -40,8 +40,14 @@
                 }),
                 invalidatesTags:['products']
             }),
-            
+           uploadImg: builder.mutation<{ location: string }, FormData>({
+            query: (formData) => ({
+                url: `/files/upload`,
+                method: "POST",
+                body: formData,
+            }),
+            }),
         })
     })
 
-    export const {useGetProductsQuery,useGetCategoriesQuery,useAddProductMutation,useGetProductByIdQuery,useDeleteProdutMutation,useUpdateProductMutation} = productApi
+    export const {useGetProductsQuery,useGetCategoriesQuery,useAddProductMutation,useGetProductByIdQuery,useDeleteProdutMutation,useUpdateProductMutation,useUploadImgMutation} = productApi
