@@ -64,7 +64,7 @@ export default function ProductList() {
       toast.success("Product deleted successfully!");
     } catch (err) {
       console.error(err);
-      toast.success("Failed to delete product");
+      toast.error("Failed to delete product");
     } finally {
       setSelectedId(null);
     }

@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
         hostname: '*',
       },
     ],
+        domains: ["somelink.com"],
+
   },
 
 };

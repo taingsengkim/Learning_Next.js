@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import { json } from "zod"
 
 const baseApi = process.env.NEXT_PUBLIC_API_URL
 export async function GET(){
@@ -7,6 +6,9 @@ export async function GET(){
     const data = await res.json()
     return NextResponse.json(data)
 }
+
+
+
 
 export async function POST(req:NextRequest){
     const body = await req.json() 
@@ -20,3 +22,4 @@ export async function POST(req:NextRequest){
     const data = await res.json()   
     return NextResponse.json(data)
 }
+

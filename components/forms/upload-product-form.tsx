@@ -30,7 +30,7 @@ import { title } from "process";
 import { privateDecrypt } from "crypto";
 import { Price } from "../i-tech-cards/price";
 import { ProductRequest, ProductResponse } from "@/lib/type/product-response";
-import { getcategories } from "@/lib/data/categories";
+import { getCategories, getcategories } from "@/lib/data/categories";
 import { CategoryType } from "@/lib/type/category-response";
 import ImagesUpload from "./images-form";
 import { ImageFile } from "@/lib/type/image-type";
@@ -42,6 +42,7 @@ import {
   useAddProductMutation,
   useUpdateProductMutation,
 } from "@/lib/features/products/productApi";
+import { useRouter } from "next/navigation";
 
 export default function UploadProduct({
   categories,
@@ -65,6 +66,8 @@ export default function UploadProduct({
     images: z.array(z.any()).min(1, "At least 1 image is required"),
   });
   console.log(product);
+
+  const route = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -114,7 +117,9 @@ export default function UploadProduct({
       price: values.price,
       description: values.description,
       categoryId: values.categoryId,
-      images: [uploadProduct.location],
+      images: [
+        "https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg",
+      ],
     };
     // const productRequest: ProductRequest = values;
     // productRequest.images[0] = uploadProduct;
@@ -127,6 +132,7 @@ export default function UploadProduct({
       }).unwrap();
 
       toast.success("Product updated successfully!");
+      route.push("/dashboard/product");
     } else {
       const resData = await createProduct(productData).unwrap();
       if (resData) {
@@ -222,40 +228,44 @@ export default function UploadProduct({
             </Field>
           )}
         />
-        <Controller
-          control={form.control}
-          name="categoryId"
-          render={({ field, fieldState }) => (
-            <Field
-              className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start"
-              data-invalid={fieldState.invalid}
-            >
-              <FieldLabel className="flex w-auto!">Category</FieldLabel>
-
-              <Select
-                key="select-0"
-                value={selectedCategory.toString()}
-                name={field.name}
-                onValueChange={(val) => {
-                  field.onChange(val);
-                  setSelectedCategory(val);
-                }}
+        {!isEdit && (
+          <Controller
+            control={form.control}
+            name="categoryId"
+            render={({ field, fieldState }) => (
+              <Field
+                className="col-span-12 col-start-auto flex self-end flex-col gap-2 space-y-0 items-start"
+                data-invalid={fieldState.invalid}
               >
-                <SelectTrigger className="w-full ">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((c, index) => (
-                    <SelectItem key={c.id} value={c.id.toString()}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+                <FieldLabel className="flex w-auto!">Category</FieldLabel>
+
+                <Select
+                  key="select-0"
+                  value={selectedCategory.toString()}
+                  name={field.name}
+                  onValueChange={(val) => {
+                    field.onChange(val);
+                    setSelectedCategory(val);
+                  }}
+                >
+                  <SelectTrigger className="w-full ">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c, index) => (
+                      <SelectItem key={c.id} value={c.id.toString()}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        )}
         <Controller
           control={form.control}
           name="images"

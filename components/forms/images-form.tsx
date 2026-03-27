@@ -26,6 +26,8 @@ const ImagesUpload = ({
   const [files, setFiles] = React.useState<File[]>(value);
   const [oldImages, setOldImages] = React.useState<string[]>(existingImages);
 
+  console.log(existingImages);
+
   React.useEffect(() => {
     setFiles(value);
   }, [value]);
@@ -47,7 +49,7 @@ const ImagesUpload = ({
     setFiles(newFiles);
     onImagesChange?.(newFiles);
   };
-
+  console.log("Old Img" + oldImages);
   return (
     <div className="flex flex-col gap-2">
       {/* Existing images */}

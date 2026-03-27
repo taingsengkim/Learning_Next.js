@@ -11,6 +11,7 @@
             }),
              getCategories: builder.query<ProductResponse[],void>({
                 query:()=>'/categories',
+                providesTags: ['categories']
             }),
             addProduct: builder.mutation({
                 query:(newProduct)=>({
@@ -39,7 +40,7 @@
                 }),
                 invalidatesTags:['products']
             }),
-
+            
         })
     })
 
