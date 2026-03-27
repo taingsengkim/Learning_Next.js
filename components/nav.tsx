@@ -34,6 +34,14 @@ export default function Navbar() {
           </li>
           <li>
             <Link
+              href="/dashboard"
+              className="text-gray-700 hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 block pl-3 pr-4 py-2 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-gray-700 dark:md:hover:text-blue-700"
+            >
+              Dashboard
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/users"
               className="text-gray-700 hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 block pl-3 pr-4 py-2 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-gray-700 dark:md:hover:text-blue-700"
             >
