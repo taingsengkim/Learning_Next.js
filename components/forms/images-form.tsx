@@ -115,7 +115,7 @@ const ImagesUpload = ({
             <FileUploadItem key={`new-${index}`} value={file}>
               <FileUploadItemPreview />
               <div className="flex-1 truncate text-sm">{file.name}</div>
-              <FileUploadItemDelete asChild>
+              <FileUploadItemDelete adItemDelete asChild>
                 <Button
                   variant="ghost"
                   size="icon"
