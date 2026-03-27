@@ -102,7 +102,6 @@ export default function ProductList() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleUpdate(d.id)}>
                       Update
                     </DropdownMenuItem>
