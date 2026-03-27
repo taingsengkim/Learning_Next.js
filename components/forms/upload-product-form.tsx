@@ -11,7 +11,7 @@ import {
   InputGroupAddon,
 } from "@/components/ui/input-group";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import React, { useState, useEffect, use } from "react";
 import { Input } from "@/components/ui/input";
@@ -29,8 +29,8 @@ import { Button } from "@/components/ui/button";
 import { title } from "process";
 import { privateDecrypt } from "crypto";
 import { Price } from "../i-tech-cards/price";
-import { ProductRequest } from "@/lib/type/product-response";
-import { getCategories } from "@/lib/data/categories";
+import { ProductRequest, ProductResponse } from "@/lib/type/product-response";
+import { getcategories } from "@/lib/data/categories";
 import { CategoryType } from "@/lib/type/category-response";
 import ImagesUpload from "./images-form";
 import { ImageFile } from "@/lib/type/image-type";
@@ -38,12 +38,19 @@ import { ImageProps } from "next/image";
 import { UploadImage } from "@/lib/data/images";
 import ProductCard from "../i-tech-cards/product-card1";
 import { toast } from "sonner";
-import { useAddProductMutation } from "@/lib/features/products/productApi";
+import {
+  useAddProductMutation,
+  useUpdateProductMutation,
+} from "@/lib/features/products/productApi";
 
 export default function UploadProduct({
   categories,
+  product,
+  isEdit = false,
 }: {
-  categories: Promise<any>;
+  categories: CategoryType[];
+  product?: ProductResponse;
+  isEdit?: boolean;
 }) {
   const formSchema = z.object({
     title: z
@@ -53,10 +60,11 @@ export default function UploadProduct({
     price: z.coerce.number("Price is required"),
     description: z
       .string()
-      .min(10, "Product details at least 5 characters long."),
+      .min(5, "Product details at least 5 characters long."),
     categoryId: z.string().min(1, "This field is required"),
     images: z.array(z.any()).min(1, "At least 1 image is required"),
   });
+  console.log(product);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,8 +83,25 @@ export default function UploadProduct({
   //   setImages(images);
   // }
   const [createProduct, { isLoading }] = useAddProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState(
+    product?.category.id || "",
+  );
 
-  const cateogires: CategoryType[] = use(categories);
+  useEffect(() => {
+    if (isEdit && product) {
+      form.reset({
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        categoryId: product.category.id.toString(),
+        images: product.images || [],
+      });
+      setExistingImages(product.images || []);
+    }
+  }, [isEdit, product, form]);
+  // const cateogires: CategoryType[] = use(categories);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     // console.log(images);
@@ -95,18 +120,27 @@ export default function UploadProduct({
     // productRequest.images[0] = uploadProduct;
     // const resData = await InsertProduct(productData);
 
-    const resData = await createProduct(productData).unwrap();
-    if (resData) {
-      form.reset({
-        title: "",
-        price: 0,
-        description: "",
-        categoryId: "",
-        images: [],
-      });
-      toast.success("Success to insert the product!");
+    if (isEdit && product) {
+      await updateProduct({
+        id: product.id,
+        ...productData,
+      }).unwrap();
+
+      toast.success("Product updated successfully!");
     } else {
-      toast.error("Failed to instert the product!");
+      const resData = await createProduct(productData).unwrap();
+      if (resData) {
+        form.reset({
+          title: "",
+          price: 0,
+          description: "",
+          categoryId: "",
+          images: [],
+        });
+        toast.success("Success to insert the product!");
+      } else {
+        toast.error("Failed to instert the product!");
+      }
     }
   }
 
@@ -200,15 +234,18 @@ export default function UploadProduct({
 
               <Select
                 key="select-0"
-                value={field.value}
+                value={selectedCategory.toString()}
                 name={field.name}
-                onValueChange={field.onChange}
+                onValueChange={(val) => {
+                  field.onChange(val);
+                  setSelectedCategory(val);
+                }}
               >
                 <SelectTrigger className="w-full ">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {cateogires.map((c, index) => (
+                  {categories.map((c, index) => (
                     <SelectItem key={c.id} value={c.id.toString()}>
                       {c.name}
                     </SelectItem>
@@ -230,14 +267,15 @@ export default function UploadProduct({
               <FieldLabel className="flex w-auto!">Upload Images</FieldLabel>
 
               {/* <ImagesUpload
-                aria-invalid={fieldState.invalid}
-                onImagesChange={handleImageChange}
-                {...field}
-              /> */}
+                  aria-invalid={fieldState.invalid}
+                  onImagesChange={handleImageChange}
+                  {...field}
+                /> */}
 
               <ImagesUpload
                 value={field.value}
                 onImagesChange={field.onChange}
+                existingImages={existingImages}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

@@ -1,88 +1,110 @@
 "use client";
 
-import { ImageIcon, X } from "lucide-react";
 import * as React from "react";
-import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   FileUpload,
   FileUploadDropzone,
   FileUploadItem,
   FileUploadItemDelete,
-  FileUploadItemMetadata,
   FileUploadItemPreview,
   FileUploadList,
-  FileUploadTrigger,
 } from "../ui/file-upload";
-import { ImageFile, ImageUploadProps } from "@/lib/type/image-type";
-import { file } from "zod";
+import { X } from "lucide-react";
 
-export const title = "Images Only";
+interface ImagesUploadProps {
+  value?: File[];
+  onImagesChange?: (files: File[]) => void;
+  existingImages?: string[]; // URLs of existing images
+}
 
-const ImagesUpload = ({ value = [], onImagesChange }: ImageUploadProps) => {
-  const [files, setFiles] = React.useState<File[]>([]);
-
-  //   //Send files to parent
-  //   React.useEffect(() => {
-  //     if (onImagesChange) {
-  //       onImagesChange(files);
-  //     }
-  //   }, [files, onImagesChange]);
+const ImagesUpload = ({
+  value = [],
+  onImagesChange,
+  existingImages = [],
+}: ImagesUploadProps) => {
+  const [files, setFiles] = React.useState<File[]>(value);
+  const [oldImages, setOldImages] = React.useState<string[]>(existingImages);
 
   React.useEffect(() => {
     setFiles(value);
   }, [value]);
 
-  const onFileReject = React.useCallback((file: File, message: string) => {
-    toast.error(message, {
-      description: `"${file.name}" is not a valid image file`,
-    });
-  }, []);
+  const handleFilesChange = (newFiles: File[]) => {
+    setFiles(newFiles);
+    onImagesChange?.(newFiles);
+  };
+
+  const handleDeleteOld = (index: number) => {
+    const newOld = [...oldImages];
+    newOld.splice(index, 1);
+    setOldImages(newOld);
+  };
+
+  const handleDeleteNew = (index: number) => {
+    const newFiles = [...files];
+    newFiles.splice(index, 1);
+    setFiles(newFiles);
+    onImagesChange?.(newFiles);
+  };
+
   return (
-    <FileUpload
-      accept="image/*"
-      maxFiles={5}
-      maxSize={5 * 1024 * 1024}
-      className="w-full max-w-md"
-      value={files}
-      onValueChange={(newFiles) => {
-        setFiles(newFiles);
-        onImagesChange?.(newFiles); //  call immediately
-      }}
-      onFileReject={onFileReject}
-      multiple
-    >
-      <FileUploadDropzone>
-        <div className="flex flex-col items-center gap-1 text-center">
-          <div className="flex items-center justify-center rounded-full border p-2.5">
-            <ImageIcon className="size-6 text-muted-foreground" />
-          </div>
-          <p className="font-medium text-sm">Upload images only</p>
-          <p className="text-muted-foreground text-xs">
-            PNG, JPG, GIF, WebP accepted
-          </p>
-        </div>
-        <FileUploadTrigger asChild>
-          <Button variant="outline" size="sm" className="mt-2">
-            Select Images
-          </Button>
-        </FileUploadTrigger>
-      </FileUploadDropzone>
-      <FileUploadList>
-        {files.map((file, index) => (
-          <FileUploadItem key={index} value={file}>
-            <FileUploadItemPreview />
-            <FileUploadItemMetadata />
-            <FileUploadItemDelete asChild>
-              <Button variant="ghost" size="icon" className="size-7">
+    <div className="flex flex-col gap-2">
+      {/* Existing images */}
+      {oldImages.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {oldImages.map((url, index) => (
+            <div key={index} className="relative">
+              <img
+                src={url}
+                className="w-20 h-20 object-cover rounded-md"
+                alt={`Existing ${index}`}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-0 right-0"
+                onClick={() => handleDeleteOld(index)}
+              >
                 <X className="size-4" />
               </Button>
-            </FileUploadItemDelete>
-          </FileUploadItem>
-        ))}
-      </FileUploadList>
-    </FileUpload>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* New uploads */}
+      <FileUpload
+        accept="image/*"
+        maxFiles={5}
+        value={files}
+        onValueChange={handleFilesChange}
+        multiple
+      >
+        <FileUploadDropzone>
+          <div className="text-center py-5 border rounded-md">
+            Drag & drop images here or click to select
+          </div>
+        </FileUploadDropzone>
+
+        <FileUploadList>
+          {files.map((file, index) => (
+            <FileUploadItem key={index} value={file}>
+              {file instanceof File && <FileUploadItemPreview />}
+              <FileUploadItemDelete asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDeleteNew(index)}
+                >
+                  <X className="size-4" />
+                </Button>
+              </FileUploadItemDelete>
+            </FileUploadItem>
+          ))}
+        </FileUploadList>
+      </FileUpload>
+    </div>
   );
 };
 

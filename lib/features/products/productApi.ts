@@ -9,6 +9,9 @@
                 query:()=>'/products',
                 providesTags:['products']
             }),
+             getCategories: builder.query<ProductResponse[],void>({
+                query:()=>'/categories',
+            }),
             addProduct: builder.mutation({
                 query:(newProduct)=>({
                     url:'/products',
@@ -21,7 +24,23 @@
                 query: (id) => `/products/${id}`,
                 providesTags: (result, error, id) => [{ type: "products", id }],
                 }),
+            deleteProdut: builder.mutation({
+                query:(id)=>({
+                    url:`/products/${id}`,
+                    method:"DELETE"
+                }),
+                invalidatesTags:['products']
+            }),
+            updateProduct: builder.mutation({
+                query:({id,...body})=>({
+                    url:`/products/${id}`,
+                    method:"PUT",
+                    body
+                }),
+                invalidatesTags:['products']
+            }),
+
         })
     })
 
-    export const {useGetProductsQuery,useAddProductMutation,useGetProductByIdQuery} = productApi
+    export const {useGetProductsQuery,useGetCategoriesQuery,useAddProductMutation,useGetProductByIdQuery,useDeleteProdutMutation,useUpdateProductMutation} = productApi
